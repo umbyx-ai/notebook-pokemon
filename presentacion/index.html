@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Datos – Pokémon</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #1a1a2e;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ── Progress bar ── */
+        .progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #e53935, #ffd700);
+            transition: width 0.4s ease;
+            z-index: 200;
+        }
+
+        /* ── Slides ── */
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 60px 80px;
+            opacity: 0;
+            transform: translateX(80px);
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            pointer-events: none;
+        }
+        .slide.active  { opacity: 1; transform: translateX(0); pointer-events: all; }
+        .slide.exit    { opacity: 0; transform: translateX(-80px); }
+
+        /* ── Navigation ── */
+        .nav {
+            position: fixed;
+            bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            z-index: 100;
+        }
+        .nav-btn {
+            background: rgba(229,57,53,0.75);
+            border: none; color: #fff;
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            font-size: 18px; cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .nav-btn:hover  { background: #e53935; transform: scale(1.08); }
+        .nav-btn:active { transform: scale(0.95); }
+        .slide-counter  { font-size: 13px; color: rgba(255,255,255,0.55); min-width: 55px; text-align: center; }
+
+        /* ── Nav dots ── */
+        .nav-dots {
+            position: fixed;
+            right: 18px; top: 50%;
+            transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .nav-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-dot.active { background: #e53935; transform: scale(1.5); }
+
+        /* ── BG decorations ── */
+        .bg-blob {
+            position: fixed; border-radius: 50%; opacity: 0.04; pointer-events: none;
+        }
+        .bg-blob-1 { width: 700px; height: 700px; background: #e53935; top: -260px; right: -220px; }
+        .bg-blob-2 { width: 450px; height: 450px; background: #ffd700; bottom: -180px; left: -140px; }
+
+        /* ══════════════════════════════════
+           SLIDE CONTENT COMPONENTS
+           ══════════════════════════════════ */
+
+        .slide-title    { font-size: 2.4rem; font-weight: 800; text-align: center; margin-bottom: 10px; }
+        .slide-subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.55); text-align: center; margin-bottom: 28px; }
+
+        /* Question badge */
+        .q-badge {
+            background: rgba(229,57,53,0.15);
+            border: 1px solid rgba(229,57,53,0.35);
+            border-radius: 20px;
+            padding: 5px 18px;
+            font-size: 0.82rem;
+            color: #ff7675;
+            margin-bottom: 16px;
+        }
+
+        /* ── COVER ── */
+        .slide-cover { background: radial-gradient(ellipse at 60% 40%, #0f3460 0%, #16213e 50%, #1a1a2e 100%); }
+
+        .pokeball {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #e53935 50%, #ffffff 50%);
+            position: relative;
+            margin-bottom: 28px;
+            box-shadow: 0 0 50px rgba(229,57,53,0.35);
+            animation: spin 10s linear infinite;
+        }
+        .pokeball::before {
+            content: '';
+            position: absolute; top: 50%; left: 0; right: 0;
+            height: 7px; background: #1a1a2e;
+            transform: translateY(-50%);
+        }
+        .pokeball::after {
+            content: '';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: #fff;
+            border: 6px solid #1a1a2e;
+            z-index: 1;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .cover-title {
+            font-size: 3.2rem; font-weight: 800;
+            background: linear-gradient(130deg, #e53935, #ffd700);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center; margin-bottom: 8px;
+        }
+        .cover-sub { font-size: 1.15rem; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 36px; }
+
+        .team-row { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+        .team-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 14px 22px; text-align: center;
+        }
+        .team-card .lbl { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .team-card .val { font-size: 0.95rem; font-weight: 600; margin-top: 4px; }
+
+        /* ── STATS GRID ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px; width: 100%; max-width: 860px; margin-top: 20px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 22px; text-align: center;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-card .num { font-size: 2.4rem; font-weight: 800; color: #ffd700; }
+        .stat-card .lbl { font-size: 0.82rem; color: rgba(255,255,255,0.55); margin-top: 6px; line-height: 1.4; }
+
+        /* ── TWO COLUMNS ── */
+        .two-col {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 22px; width: 100%; max-width: 960px;
+        }
+        .col-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 22px;
+        }
+        .col-card h3 { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+
+        /* ── TABLE ── */
+        .res-table { width: 100%; max-width: 780px; border-collapse: collapse; }
+        .res-table th {
+            background: rgba(229,57,53,0.25);
+            padding: 11px 18px; text-align: left;
+            font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .res-table td { padding: 11px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.92rem; }
+        .res-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+        /* Rank colors */
+        .r1 { color: #ffd700; font-weight: 800; font-size: 1.05rem; }
+        .r2 { color: #c0c0c0; font-weight: 700; }
+        .r3 { color: #cd7f32; font-weight: 700; }
+
+        /* ── TYPE BADGES ── */
+        .badge {
+            display: inline-block; padding: 3px 10px;
+            border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+        }
+        .t-Dragon   { background:#7038F8; }
+        .t-Steel    { background:#B8B8D0; color:#333; }
+        .t-Dark     { background:#705848; }
+        .t-Psychic  { background:#F85888; }
+        .t-Fire     { background:#F08030; }
+        .t-Fighting { background:#C03028; }
+        .t-Rock     { background:#B8A038; }
+        .t-Ice      { background:#98D8D8; color:#333; }
+        .t-Electric { background:#F8D030; color:#333; }
+        .t-Flying   { background:#A890F0; }
+        .t-Fairy    { background:#EE99AC; color:#333; }
+        .t-Ground   { background:#E0C068; color:#333; }
+        .t-Ghost    { background:#705898; }
+        .t-Poison   { background:#A040A0; }
+        .t-Water    { background:#6890F0; }
+        .t-Grass    { background:#78C850; color:#333; }
+        .t-Normal   { background:#A8A878; color:#333; }
+        .t-Bug      { background:#A8B820; color:#333; }
+
+        /* ── HABITAT BARS ── */
+        .hab-list { width: 100%; max-width: 660px; margin-top: 16px; }
+        .hab-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+        .hab-name { width: 110px; font-size: 0.82rem; color: rgba(255,255,255,0.65); text-align: right; flex-shrink: 0; }
+        .hab-bar {
+            height: 26px; border-radius: 5px;
+            background: linear-gradient(90deg, #e53935, #ff7675);
+            display: flex; align-items: center; padding-left: 10px;
+            font-size: 0.8rem; font-weight: 700; color: #fff;
+        }
+
+        /* ── CONCLUSION LIST ── */
+        .conc-list { list-style: none; max-width: 820px; width: 100%; }
+        .conc-list li {
+            display: flex; align-items: flex-start; gap: 14px;
+            padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+            font-size: 0.95rem; line-height: 1.6;
+        }
+        .conc-list li .ic { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            background: rgba(255,215,0,0.07);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 10px; padding: 14px 18px;
+            font-size: 0.88rem; color: rgba(255,255,255,0.75);
+            margin-top: 18px; max-width: 780px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background blobs -->
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+
+<!-- Progress bar -->
+<div class="progress" id="progress"></div>
+
+<!-- Nav dots -->
+<div class="nav-dots" id="navDots"></div>
+
+<!-- ═══════════════════════════════════════
+     SLIDES
+     ═══════════════════════════════════════ -->
+
+<!-- SLIDE 1 – Portada -->
+<div class="slide slide-cover active" data-slide="0">
+    <div class="pokeball"></div>
+    <div class="cover-title">Análisis de Datos Pokémon</div>
+    <div class="cover-sub">Proyecto de análisis de un conjunto de datos<br>0378 · Seguridad y Alta Disponibilidad</div>
+    <div class="team-row">
+        <div class="team-card">
+            <div class="lbl">Alumnos</div>
+            <div class="val">[Nombre Alumno 1] &amp; [Nombre Alumno 2]</div>
+        </div>
+        <div class="team-card">
+            <div class="lbl">Profesor</div>
+            <div class="val">Josep Mª Ruiz Ríos</div>
+        </div>
+        <div class="team-card">
+            <div class="lbl">Curso</div>
+            <div class="val">2026 – 2027</div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 2 – El Dataset -->
+<div class="slide" data-slide="1">
+    <div class="slide-title">El Dataset</div>
+    <div class="slide-subtitle">pokemon_complete.csv → pokemon.csv (limpiado)</div>
+    <div class="stats-grid">
+        <div class="stat-card"><div class="num">1.025</div><div class="lbl">Pokémon únicos<br>(Pokédex Nacional)</div></div>
+        <div class="stat-card"><div class="num">15</div><div class="lbl">Columnas seleccionadas<br>(de 31 originales)</div></div>
+        <div class="stat-card"><div class="num">9</div><div class="lbl">Generaciones<br>representadas</div></div>
+        <div class="stat-card"><div class="num">18</div><div class="lbl">Tipos elementales<br>analizados</div></div>
+        <div class="stat-card"><div class="num">386</div><div class="lbl">Pokémon con<br>hábitat asignado</div></div>
+        <div class="stat-card"><div class="num">436</div><div class="lbl">BST de media<br>global</div></div>
+    </div>
+</div>
+
+<!-- SLIDE 3 – Limpieza -->
+<div class="slide" data-slide="2">
+    <div class="slide-title">Limpieza del Dataset</div>
+    <div class="slide-subtitle">Decisiones tomadas antes del análisis</div>
+    <div class="two-col" style="margin-top:20px;">
+        <div class="col-card">
+            <h3>✂️ 16 Columnas eliminadas</h3>
+            <p style="font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.85;">
+                type_2 · height_m · weight_kg · base_experience · abilities · hidden_ability · is_baby · color · shape · egg_groups · growth_rate · base_happiness · genus · evolution_chain_id · flavor_text · sprite_url
+            </p>
+        </div>
+        <div class="col-card">
+            <h3>⚠️ Valores nulos: columna <code style="color:#ffd700">habitat</code></h3>
+            <p style="font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.75;">
+                639 Pokémon no tienen hábitat asignado. La categorización por hábitat solo existía en los juegos de las <strong style="color:#fff">Generaciones 1 a 3</strong> (FireRed / LeafGreen).
+            </p>
+            <div style="margin-top:14px;background:rgba(229,57,53,0.12);border-radius:8px;padding:10px;font-size:0.84rem;">
+                Solución aplicada: <code style="color:#ffd700">dropna()</code> puntual en las preguntas 1 y 2
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4 – Pregunta 1 -->
+<div class="slide" data-slide="3">
+    <div class="q-badge">Pregunta 1 de 5</div>
+    <div class="slide-title">Pokémon más Fuerte por Hábitat</div>
+    <div class="slide-subtitle">De cada hábitat, ¿qué Pokémon tiene el <code>base_stat_total</code> más alto?</div>
+    <table class="res-table">
+        <thead><tr><th>#</th><th>Hábitat</th><th>Pokémon</th><th>Base Stat Total</th></tr></thead>
+        <tbody>
+            <tr><td class="r1">🥇</td><td>rare</td><td><strong>Rayquaza</strong></td><td class="r1">680</td></tr>
+            <tr><td class="r2">🥈</td><td>sea</td><td>Kyogre</td><td class="r2">670</td></tr>
+            <tr><td class="r2">🥈</td><td>forest</td><td>Slaking</td><td class="r2">670</td></tr>
+            <tr><td class="r2">🥈</td><td>rough-terrain</td><td>Groudon</td><td class="r2">670</td></tr>
+            <tr><td class="r3">🥉</td><td>waters-edge</td><td>Dragonite</td><td class="r3">600</td></tr>
+            <tr><td class="r3">🥉</td><td>mountain</td><td>Tyranitar</td><td class="r3">600</td></tr>
+            <tr><td></td><td>cave</td><td>Regirock</td><td>580</td></tr>
+            <tr><td></td><td>grassland</td><td>Raikou</td><td>580</td></tr>
+            <tr><td></td><td>urban</td><td>Blissey</td><td>540</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- SLIDE 5 – Pregunta 2 -->
+<div class="slide" data-slide="4">
+    <div class="q-badge">Pregunta 2 de 5</div>
+    <div class="slide-title">Hábitat con más Fuerza</div>
+    <div class="slide-subtitle">¿Qué hábitat tiene la <strong>media</strong> de puntos de estadística total más alta?</div>
+    <div class="hab-list">
+        <div class="hab-row"><span class="hab-name">rare</span>        <div class="hab-bar" style="width:410px;">599.6</div></div>
+        <div class="hab-row"><span class="hab-name">sea</span>         <div class="hab-bar" style="width:290px;">425.3</div></div>
+        <div class="hab-row"><span class="hab-name">rough-terrain</span><div class="hab-bar" style="width:284px;">417.4</div></div>
+        <div class="hab-row"><span class="hab-name">cave</span>        <div class="hab-bar" style="width:279px;">410.9</div></div>
+        <div class="hab-row"><span class="hab-name">urban</span>       <div class="hab-bar" style="width:276px;">407.9</div></div>
+        <div class="hab-row"><span class="hab-name">mountain</span>    <div class="hab-bar" style="width:275px;">407.3</div></div>
+        <div class="hab-row"><span class="hab-name">grassland</span>   <div class="hab-bar" style="width:272px;">402.7</div></div>
+        <div class="hab-row"><span class="hab-name">waters-edge</span> <div class="hab-bar" style="width:271px;">399.4</div></div>
+        <div class="hab-row"><span class="hab-name">forest</span>      <div class="hab-bar" style="width:248px;">368.7</div></div>
+    </div>
+    <p style="margin-top:14px;font-size:0.78rem;color:rgba(255,255,255,0.4);">* Hábitats ordenados por media de base_stat_total (descendente)</p>
+</div>
+
+<!-- SLIDE 6 – Pregunta 3 -->
+<div class="slide" data-slide="5">
+    <div class="q-badge">Pregunta 3 de 5</div>
+    <div class="slide-title">Tipo más Fuerte de Media</div>
+    <div class="slide-subtitle">¿Qué tipo elemental tiene la <strong>media de base_stat_total</strong> más alta?</div>
+    <div class="two-col" style="margin-top:20px;max-width:860px;">
+        <div class="col-card">
+            <h3>🏆 Top 5 Tipos más Fuertes</h3>
+            <div style="display:flex;flex-direction:column;gap:13px;margin-top:12px;">
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Dragon">Dragon</span><strong>490.2</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Steel">Steel</span><strong>475.1</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Dark">Dark</span><strong>454.7</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Psychic">Psychic</span><strong>446.7</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Fire">Fire</span><strong>446.2</strong></div>
+            </div>
+        </div>
+        <div class="col-card">
+            <h3>📉 Tipos más Débiles</h3>
+            <div style="display:flex;flex-direction:column;gap:13px;margin-top:12px;">
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Bug">Bug</span><strong>374.6</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Normal">Normal</span><strong>399.8</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Grass">Grass</span><strong>413.1</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Water">Water</span><strong>418.9</strong></div>
+                <div style="display:flex;align-items:center;gap:12px;"><span class="badge t-Poison">Poison</span><strong>426.3</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7 – Pregunta 4 -->
+<div class="slide" data-slide="6">
+    <div class="q-badge">Pregunta 4 de 5</div>
+    <div class="slide-title">No Legendario más Fuerte</div>
+    <div class="slide-subtitle">De todos los Pokémon no legendarios ni míticos, ¿cuál tiene el <code>base_stat_total</code> más alto?</div>
+    <table class="res-table" style="max-width:680px;margin-top:18px;">
+        <thead><tr><th>#</th><th>Pokémon</th><th>Tipo</th><th>Base Stat Total</th></tr></thead>
+        <tbody>
+            <tr><td class="r1">🥇</td><td><strong>Slaking</strong></td><td><span class="badge t-Normal">Normal</span></td><td class="r1">670</td></tr>
+            <tr><td class="r2">🥈</td><td>Hydreigon</td><td><span class="badge t-Dark">Dark</span></td><td class="r2">600</td></tr>
+            <tr><td class="r2">🥈</td><td>Kommo-o</td><td><span class="badge t-Dragon">Dragon</span></td><td class="r2">600</td></tr>
+            <tr><td class="r2">🥈</td><td>Goodra</td><td><span class="badge t-Dragon">Dragon</span></td><td class="r2">600</td></tr>
+            <tr><td class="r2">🥈</td><td>Baxcalibur</td><td><span class="badge t-Dragon">Dragon</span></td><td class="r2">600</td></tr>
+        </tbody>
+    </table>
+    <div class="info-box">
+        💡 <strong style="color:#ffd700">Curiosidad:</strong> Slaking (670 BST) supera a muchos legendarios en estadística total, pero su habilidad pasiva <em>Truant</em> hace que descanse un turno de cada dos en combate.
+    </div>
+</div>
+
+<!-- SLIDE 8 – Pregunta 5 -->
+<div class="slide" data-slide="7">
+    <div class="q-badge">Pregunta 5 de 5</div>
+    <div class="slide-title">Legendario más Fácil de Capturar</div>
+    <div class="slide-subtitle">¿Qué Pokémon legendario tiene el <code>capture_rate</code> más alto?</div>
+    <div class="two-col" style="margin-top:20px;max-width:860px;">
+        <div class="col-card">
+            <h3>🎯 Capture Rate 255 (máximo posible)</h3>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;font-size:0.95rem;">
+                <div>⚡ <strong>Necrozma</strong> &nbsp;—&nbsp; 600 BST</div>
+                <div>🌌 <strong>Eternatus</strong> &nbsp;—&nbsp; 690 BST</div>
+                <div>🐢 <strong>Terapagos</strong> &nbsp;—&nbsp; 450 BST</div>
+            </div>
+            <div style="margin-top:14px;font-size:0.8rem;color:rgba(255,255,255,0.45);">
+                Rate 255 = captura garantizada con cualquier Pokéball
+            </div>
+        </div>
+        <div class="col-card">
+            <h3>📊 Contexto: la mayoría de legendarios</h3>
+            <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.9;margin-top:8px;">
+                <div>La mayoría de legendarios tienen <strong style="color:#e53935">capture rate de 3</strong> (muy difícil).</div>
+                <div style="margin-top:10px;">Los 3 legendarios con rate 255 se obtienen de manera <strong>obligatoria</strong> durante la historia del juego, de ahí el rate alto.</div>
+                <div style="margin-top:10px;">Capture rate 45: Rayquaza, Xerneas, Yveltal, Solgaleo, Lunala…</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9 – Conclusiones -->
+<div class="slide" data-slide="8">
+    <div class="slide-title">Conclusiones</div>
+    <div class="slide-subtitle" style="margin-bottom:22px;">¿Qué hemos aprendido de los datos?</div>
+    <ul class="conc-list">
+        <li><span class="ic">🏔️</span><span>El hábitat <strong>rare</strong> concentra los Pokémon más poderosos (media 599.6 BST), ya que aloja a las criaturas legendarias más antiguas del juego.</span></li>
+        <li><span class="ic">🐉</span><span>El tipo <strong>Dragon</strong> es el más fuerte de media (490.2 BST), reflejando su estatus de tipo de élite en el diseño de Game Freak.</span></li>
+        <li><span class="ic">🦥</span><span><strong>Slaking</strong> (670 BST) es el no legendario más poderoso en estadística, pero su habilidad pasiva lo limita gravemente en combate real.</span></li>
+        <li><span class="ic">🎯</span><span><strong>Necrozma, Eternatus y Terapagos</strong> tienen el capture rate máximo porque el juego obliga a capturarlos para avanzar en la trama.</span></li>
+        <li><span class="ic">📊</span><span>Los datos reflejan un <strong>diseño intencionado</strong>: los Pokémon de hábitats escasos y de tipos específicos como Dragón o Acero están sistemáticamente diseñados para ser más fuertes.</span></li>
+    </ul>
+</div>
+
+<!-- ── Navigation bar ── -->
+<div class="nav">
+    <button class="nav-btn" onclick="changeSlide(-1)">&#8592;</button>
+    <span class="slide-counter" id="slideCounter">1 / 9</span>
+    <button class="nav-btn" onclick="changeSlide(1)">&#8594;</button>
+</div>
+
+<script>
+    const slides  = document.querySelectorAll('.slide');
+    const counter = document.getElementById('slideCounter');
+    const prog    = document.getElementById('progress');
+    const dotsEl  = document.getElementById('navDots');
+    let cur = 0;
+
+    // Build nav dots
+    slides.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+        d.onclick = () => go(i);
+        dotsEl.appendChild(d);
+    });
+
+    function updateUI() {
+        document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+        prog.style.width = ((cur + 1) / slides.length * 100) + '%';
+        counter.textContent = (cur + 1) + ' / ' + slides.length;
+    }
+
+    function go(n) {
+        if (n === cur) return;
+        slides[cur].classList.remove('active');
+        slides[cur].classList.add('exit');
+        const old = cur;
+        cur = n;
+        slides[cur].classList.add('active');
+        setTimeout(() => slides[old].classList.remove('exit'), 460);
+        updateUI();
+    }
+
+    function changeSlide(dir) {
+        const next = cur + dir;
+        if (next >= 0 && next < slides.length) go(next);
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+        if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+    });
+
+    updateUI();
+</script>
+</body>
+</html>
