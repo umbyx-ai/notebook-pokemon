@@ -11,7 +11,7 @@
 | **Módulo** | 0378 – Seguridad y Alta Disponibilidad |
 | **Curso / Ciclo** | 2º de ASIX (Administración de Sistemas Informáticos en Red) |
 | **Profesor** | Josep Mª Ruiz Ríos |
-| **Alumnos** | [Nombre Alumno 1] & [Nombre Alumno 2] |
+| **Alumnos** | Izan Barrasa & Marti Pino |
 | **Curso escolar** | 2026 – 2027 |
 | **Repositorio** | [notebook-pokemon](https://github.com/umbyx-ai/notebook-pokemon) |
 
