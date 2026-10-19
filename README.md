@@ -1,137 +1,120 @@
-# Proyecto: Análisis de un Conjunto de Datos — Universo Pokémon 🔴⚪
+# Proyecto: Análisis de Datos Pokémon 🔴⚪
 
-> **Memoria técnica y resultados del proyecto de análisis exploratorio de datos mediante Python y Pandas.**
+> **Memoria del proyecto de análisis de datos realizado en Python con Pandas, Matplotlib y Seaborn para la asignatura de Seguridad y Alta Disponibilidad.**
 
 ---
 
-## 📌 Ficha del Proyecto
+## 📌 Datos del Proyecto
 
-| Parámetro | Detalle |
+| Campo | Información |
 | :--- | :--- |
-| **Módulo Formativo** | 0378 – Seguridad y Alta Disponibilidad (Tema 1: Alta Disponibilidad) |
-| **Ciclo Formativo** | Administración de Sistemas Informáticos en Red (ASIX 2) |
+| **Módulo** | 0378 – Seguridad y Alta Disponibilidad |
+| **Curso / Ciclo** | 2º de ASIX (Administración de Sistemas Informáticos en Red) |
 | **Profesor** | Josep Mª Ruiz Ríos |
-| **Autores** | [Nombre Alumno 1] & [Nombre Alumno 2] |
-| **Curso Académico** | 2026 – 2027 |
-| **Repositorio GitHub** | [notebook-pokemon](https://github.com/umbyx-ai/notebook-pokemon) |
+| **Alumnos** | [Nombre Alumno 1] & [Nombre Alumno 2] |
+| **Curso escolar** | 2026 – 2027 |
+| **Repositorio** | [notebook-pokemon](https://github.com/umbyx-ai/notebook-pokemon) |
 
 ---
 
-## 📑 Tabla de Contenidos
-1. [Introducción](#1-introducción)
-2. [Descripción del Dataset](#2-descripción-del-dataset)
-3. [Limpieza y Gestión de Datos](#3-limpieza-y-gestión-de-datos)
-4. [Análisis Exploratorio de Datos (EDA)](#4-análisis-exploratorio-de-datos-eda)
-5. [Análisis en Profundidad: Resolución de las 5 Preguntas](#5-análisis-en-profundidad-resolución-de-las-5-preguntas)
+## 📑 Índice
+1. [Introducción y elección del tema](#1-introducción-y-elección-del-tema)
+2. [Descripción del dataset](#2-descripción-del-dataset)
+3. [Limpieza y tratamiento de los datos](#3-limpieza-y-tratamiento-de-los-datos)
+4. [Exploración inicial (EDA)](#4-exploración-inicial-eda)
+5. [Resolución de las 5 preguntas planteadas](#5-resolución-de-las-5-preguntas-planteadas)
    - [5.1. Pregunta 1: Pokémon más fuerte por hábitat](#51-pregunta-1-pokémon-más-fuerte-por-hábitat)
    - [5.2. Pregunta 2: Hábitat con más puntos de fuerza](#52-pregunta-2-hábitat-con-más-puntos-de-fuerza)
-   - [5.3. Pregunta 3: Tipo más fuerte de media](#53-pregunta-3-tipo-más-fuerte-de-media)
+   - [5.3. Pregunta 3: Tipo de Pokémon más fuerte de media](#53-pregunta-3-tipo-de-pokémon-más-fuerte-de-media)
    - [5.4. Pregunta 4: Pokémon no legendario más fuerte](#54-pregunta-4-pokémon-no-legendario-más-fuerte)
    - [5.5. Pregunta 5: Legendarios con mayor ratio de captura](#55-pregunta-5-legendarios-con-mayor-ratio-de-captura)
-6. [Conclusiones Generales](#6-conclusiones-generales)
-7. [Estructura del Repositorio](#7-estructura-del-repositorio)
+6. [Conclusiones](#6-conclusiones)
+7. [Estructura del repositorio](#7-estructura-del-repositorio)
 
 ---
 
-## 1. Introducción
+## 1. Introducción y elección del tema
 
-El presente proyecto se enmarca dentro del módulo formativo **0378 – Seguridad y Alta Disponibilidad** del ciclo de grado superior **ASIX2**. El objetivo fundamental consiste en aplicar metodologías rigurosas de análisis, tratamiento y visualización de datos mediante el lenguaje de programación Python y su ecosistema de librerías científicas, adquiriendo competencias clave en inspección técnica, depuración de anomalías, cálculo descriptivo y formulación de preguntas de investigación.
+Este proyecto forma parte de la asignatura **0378 – Seguridad y Alta Disponibilidad** en 2º de ASIX. El objetivo era trabajar en pareja utilizando Python, Jupyter Notebooks y librerías de análisis de datos (Pandas, NumPy, Matplotlib y Seaborn), subiendo todo el trabajo a un repositorio compartido en GitHub.
 
-### ¿Por qué el universo Pokémon?
-Se ha seleccionado este conjunto de datos debido a su enorme riqueza analítica:
-* **Variables cuantitativas continuas y discretas**: Atributos numéricos de combate (`hp`, `attack`, `defense`, `sp_attack`, `sp_defense`, `speed`), la suma total de poder (`base_stat_total`) y ratios de probabilidad (`capture_rate`).
-* **Variables cualitativas / categóricas**: Tipologías elementales (`type_1`), entornos biológicos (`habitat`) y marcas booleanas de categoría especial (`is_legendary`, `is_mythical`).
-* **Relaciones no triviales**: Permite plantear hipótesis sobre el diseño paramétrico de videojuegos, balance competitivo y narrativa lúdica.
+### ¿Por qué elegimos Pokémon?
+Escogimos este tema principalmente porque es una saga que nos gusta mucho a los dos y sobre la que ya teníamos bastante conocimiento previo. Al conocer bien los juegos, los tipos, las estadísticas y las mecánicas, sabíamos que podíamos plantear preguntas con sentido y entender fácilmente si los datos que nos devolvía el código eran correctos o si había algún error. Además, es un dataset muy completo para trabajar, ya que combina números (vida, ataque, defensa, velocidad...) con categorías (tipos, hábitats, generaciones).
 
-### Pila Tecnológica
-* **Python 3.14**: Motor de computación base.
-* **Pandas & NumPy**: Carga de DataFrames, filtrado vectorial, agregaciones y álgebra de tablas.
-* **Matplotlib & Seaborn**: Generación de visualizaciones gráficas estadísticas de alta calidad.
-* **Jupyter Notebook**: Entorno de desarrollo interactivo modular por notebooks.
-* **Git & GitHub Desktop**: Control de versiones, ramas y trabajo colaborativo en pareja.
+### Organización del trabajo
+Repartirnos las preguntas no tuvo ninguna complicación: lo echamos a suertes. A uno le tocó hacer la exploración inicial y las preguntas 1 y 3, y al otro las preguntas 2, 4 y 5. Para coordinarnos usamos GitHub Desktop, con el que ya habíamos trabajado anteriormente en otras prácticas, por lo que el flujo de hacer commits, pull y push fue cómodo y sin conflictos.
 
 ---
 
-## 2. Descripción del Dataset
+## 2. Descripción del dataset
 
-El conjunto de datos original procede de la consolidación de información extraída de la **PokéAPI** y repositorios abiertos de **Kaggle** (`pokemon_complete.csv`). Tras un proceso exhaustivo de auditoría y depuración técnica, se ha consolidado un archivo definitivo denominado **`pokemon.csv`**, compuesto por **1.025 registros** y **15 variables de estudio**.
+El archivo original procede de Kaggle (`pokemon_complete.csv`). Después de revisarlo y limpiarlo, generamos nuestro propio archivo definitivo: **`pokemon.csv`**, que contiene **1.025 filas** (una por cada Pokémon de la Pokédex Nacional) y **15 columnas**:
 
-### Diccionario de Datos
-
-| Campo | Tipo | Descripción |
+| Columna | Tipo de dato | Descripción |
 | :--- | :---: | :--- |
-| `pokedex_number` | `int64` | Identificador numérico oficial en la Pokédex Nacional (1 al 1025). |
-| `name` | `object` | Nombre oficial de la especie en inglés. |
-| `type_1` | `object` | Tipo elemental principal de la criatura (Fuego, Agua, Dragón, etc.). |
-| `hp` | `int64` | Puntos base de salud (*Hit Points*). |
-| `attack` | `int64` | Puntos base de ataque físico. |
-| `defense` | `int64` | Puntos base de defensa física. |
-| `sp_attack` | `int64` | Puntos base de ataque especial. |
-| `sp_defense` | `int64` | Puntos base de defensa especial. |
-| `speed` | `int64` | Puntos base de velocidad de combate. |
-| `base_stat_total` | `int64` | Puntuación total acumulada de las 6 estadísticas básicas. |
-| `generation` | `int64` | Generación a la que pertenece la especie (1 a 9). |
-| `is_legendary` | `bool` | Indicador booleano de si es un Pokémon legendario. |
-| `is_mythical` | `bool` | Indicador booleano de si es un Pokémon singular/mítico. |
-| `habitat` | `object` | Entorno biológico asignado oficialmente (bosque, mar, cueva, etc.). |
-| `capture_rate` | `int64` | Coeficiente de dificultad de captura (de 3 a 255). |
+| `pokedex_number` | `int64` | Número oficial en la Pokédex (del 1 al 1025). |
+| `name` | `object` | Nombre del Pokémon. |
+| `type_1` | `object` | Tipo principal del Pokémon (Fuego, Agua, Planta, Dragón...). |
+| `hp` | `int64` | Puntos de vida base. |
+| `attack` | `int64` | Puntos de ataque físico. |
+| `defense` | `int64` | Puntos de defensa física. |
+| `sp_attack` | `int64` | Puntos de ataque especial. |
+| `sp_defense` | `int64` | Puntos de defensa especial. |
+| `speed` | `int64` | Velocidad de combate. |
+| `base_stat_total` | `int64` | Suma de todas las estadísticas de combate anteriores. |
+| `generation` | `int64` | Generación en la que se introdujo (del 1 al 9). |
+| `is_legendary` | `bool` | Si es legendario (`True` o `False`). |
+| `is_mythical` | `bool` | Si es singular o mítico (`True` o `False`). |
+| `habitat` | `object` | Hábitat asignado (bosque, mar, cueva, etc.). |
+| `capture_rate` | `int64` | Facilidad de captura (cuanto más alto, más fácil). |
 
 ---
 
-## 3. Limpieza y Gestión de Datos
+## 3. Limpieza y tratamiento de los datos
 
-Para asegurar la calidad y consistencia de los análisis, se adoptaron tres decisiones metodológicas clave:
+Antes de ponernos a responder las preguntas, revisamos el archivo y tomamos varias decisiones de limpieza:
 
-### 3.1. Reducción de dimensionalidad (16 columnas eliminadas)
-El CSV original contaba con 31 columnas. Se descartaron 16 variables puramente cosméticas o prescindibles para las preguntas planteadas:
-`type_2`, `height_m`, `weight_kg`, `base_experience`, `abilities`, `hidden_ability`, `is_baby`, `color`, `shape`, `egg_groups`, `growth_rate`, `base_happiness`, `genus`, `evolution_chain_id`, `flavor_text` y `sprite_url`.
-> *Motivación*: Eliminar ruido analítico y optimizar el uso de memoria en Pandas.
+1. **Eliminar columnas irrelevantes (de 31 a 15)**:  
+   El dataset original venía con 31 columnas. Borramos directamente todas aquellas que no aportaban nada a las preguntas que íbamos a responder o que eran solo datos cosméticos, como las URLs de las imágenes (`sprite_url`), los textos de la Pokédex (`flavor_text`), las alturas, pesos, grupos de huevo o habilidades.
 
-### 3.2. Normalización de especies (1.025 especies base)
-El archivo crudo contenía 1.350 filas debido a formas alternativas, megaevoluciones y formas regionales con identificadores superiores a 10.000 (ej. *Mega-Charizard*, *Deoxys-Attack*).
-> *Motivación*: Se filtró estrictamente el rango `pokedex_number <= 1025`, garantizando que cada especie única esté representada exactamente una vez y evitando sesgos estadísticos de duplicidad.
+2. **Filtrar a las 1.025 especies base (de 1.350 a 1.025 filas)**:  
+   El archivo original tenía 1.350 filas porque incluía megaevoluciones y formas regionales con números de Pokédex superiores a 10.000. Decidimos quedarnos únicamente con los 1.025 Pokémon oficiales de la Pokédex Nacional para que cada especie contara una sola vez y no falseara las medias de los tipos ni de los hábitats.
 
-### 3.3. Tratamiento de valores nulos (columna `habitat`)
-La verificación con `df.isnull().sum()` demostró que todas las variables están completas al 100%, salvo `habitat`, que presenta **639 valores faltantes (`NaN`)**:
-* **Contexto técnico e histórico**: El sistema de hábitats fue una función introducida exclusivamente en la 3ª Generación (*Pokémon Rojo Fuego y Verde Hoja* de Game Boy Advance, año 2004) para catalogar a los **386 Pokémon** existentes en esa época (Gen 1 a 3). A partir de la Generación 4 en adelante, la Pokédex oficial abandonó esta función.
-* **Solución aplicada**: No se eliminaron las filas ni se imputaron valores sintéticos. Se aplicó un filtrado puntual mediante `dropna(subset=['habitat'])` únicamente en las Preguntas 1 y 2, manteniendo intactos los 1.025 Pokémon para el resto del estudio.
+3. **El paréntesis sobre la columna `habitat`**:  
+   Al revisar los valores nulos (`df.isnull().sum()`), vimos que la única columna con datos faltantes era `habitat`, con 639 nulos. Investigando el motivo, vimos que la función de hábitats solo existió oficialmente en los juegos de la 3ª Generación (*Rojo Fuego y Verde Hoja* para Game Boy Advance), donde se catalogaron los 386 Pokémon que existían en ese momento. A partir de la 4ª generación, Game Freak dejó de usar esta clasificación.  
+   Como era un tema interesante para responder a las dos primeras preguntas, **decidimos mantenerla haciendo ese breve paréntesis explicativo**, utilizando `dropna(subset=['habitat'])` solo cuando analizamos los hábitats para no tener que tirar a la basura el resto de Pokémon en las demás preguntas.
 
 ---
 
-## 4. Análisis Exploratorio de Datos (EDA)
+## 4. Exploración inicial (EDA)
 
-En el cuaderno `00_exploracion_inicial.ipynb` se procesaron las estadísticas descriptivas globales de las variables de combate para el total de 1.025 Pokémon:
+En el notebook `00_exploracion_inicial.ipynb` cargamos el dataset y sacamos las estadísticas descriptivas generales de todos los Pokémon con `.describe()`:
 
-| Métrica | HP | Attack | Defense | Sp. Atk | Sp. Def | Speed | BST Total |
+| Métrica | HP | Attack | Defense | Sp. Atk | Sp. Def | Speed | Base Stat Total |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Media (`mean`)** | 69.9 | 78.8 | 74.2 | 71.7 | 71.8 | 68.0 | **435.5** |
-| **Desv. Est. (`std`)** | 26.1 | 32.1 | 30.7 | 32.3 | 27.7 | 29.3 | **120.9** |
-| **Mínimo (`min`)** | 1.0 | 5.0 | 5.0 | 10.0 | 20.0 | 5.0 | **175.0** |
-| **Mediana (`50%`)** | 68.0 | 75.0 | 70.0 | 65.0 | 70.0 | 65.0 | **450.0** |
-| **Máximo (`max`)** | 255.0 | 190.0 | 250.0 | 194.0 | 250.0 | 200.0 | **720.0** |
+| **Media** | 69.9 | 78.8 | 74.2 | 71.7 | 71.8 | 68.0 | **435.5** |
+| **Desv. estándar** | 26.1 | 32.1 | 30.7 | 32.3 | 27.7 | 29.3 | **120.9** |
+| **Mínimo** | 1.0 | 5.0 | 5.0 | 10.0 | 20.0 | 5.0 | **175.0** |
+| **Mediana (50%)** | 68.0 | 75.0 | 70.0 | 65.0 | 70.0 | 65.0 | **450.0** |
+| **Máximo** | 255.0 | 190.0 | 250.0 | 194.0 | 250.0 | 200.0 | **720.0** |
 
-### Observaciones clave
-* **Fuerza media global**: La media de poder se sitúa en **435.5 puntos**, con una mediana de **450.0 puntos**, lo que demuestra una distribución bastante simétrica centrada en la evolución intermedia.
-* **Rango de poder**: El valor mínimo es de **175 puntos** y el techo estándar lo marca Arceus con **720 puntos**.
+Viendo la tabla, la media general de estadísticas de un Pokémon se queda en unos **435 puntos**, con una mediana de **450**. El mínimo del juego son 175 puntos y el máximo de esta lista base llega a 720 puntos (Arceus).
 
 ---
 
-## 5. Análisis en Profundidad: Resolución de las 5 Preguntas
+## 5. Resolución de las 5 preguntas planteadas
 
-A continuación se detalla la resolución técnica de cada una de las 5 preguntas planteadas, incluyendo metodología, tabla de resultados, gráfico generado e interpretación.
+A continuación explicamos cómo resolvimos cada pregunta en su respectivo notebook y los resultados obtenidos. Como conocemos la franquicia, la mayoría de conclusiones salieron tal y como nos esperábamos.
 
 ---
 
 ### 5.1. Pregunta 1: Pokémon más fuerte por hábitat
 
 > **Pregunta:** *De cada hábitat, ¿cuál es el Pokémon con más puntos de estadística total (`base_stat_total`)?*
+> *(Notebook: `01_pokemon_mas_fuerte_por_habitat.ipynb`)*
 
-* **Cuaderno**: [`01_pokemon_mas_fuerte_por_habitat.ipynb`](01_pokemon_mas_fuerte_por_habitat.ipynb)
-* **Metodología**: Filtrado de registros válidos de hábitat (386 filas), agrupamiento por `habitat` y extracción del índice máximo con `idxmax()` sobre `base_stat_total`.
+Para responderla, filtramos los Pokémon que sí tenían hábitat asignado, agrupamos por `habitat` y nos quedamos con el valor máximo de cada grupo (`idxmax()`).
 
-#### Tabla de Resultados
-
-| Hábitat | Pokémon Líder | Base Stat Total |
+| Hábitat | Pokémon más fuerte | Base Stat Total |
 | :--- | :--- | :---: |
 | 🥇 **rare** | **Rayquaza** | **680** |
 | 🥈 **sea** | Kyogre | 670 |
@@ -143,158 +126,129 @@ A continuación se detalla la resolución técnica de cada una de las 5 pregunta
 | **grassland** | Raikou | 580 |
 | **urban** | Blissey | 540 |
 
-#### Visualización
 ![Pokémon más Fuerte por Hábitat](graficos/pregunta_1.png)
 
-#### Interpretación
-* El líder absoluto resultante en el cuaderno es **Rayquaza** con **680 puntos** en el hábitat `rare`.
-* Le siguen de forma destacada las deidades climáticas **Kyogre (670)** en el mar y **Groudon (670)** en terreno accidentado, junto al sorprendente **Slaking (670)** en bosque.
-* *Nota analítica*: En el hábitat `rare` se produce un empate técnico exacto a 680 puntos entre **Rayquaza (#384)** y **Mewtwo (#150)**, situándose ambos en la cima absoluta de poder para especies con hábitat catalogado.
+* **Comentario:** En el gráfico horizontal pusimos a cada Pokémon con un color representativo suyo. El más fuerte resultó ser **Rayquaza** con 680 puntos en el hábitat raro, seguido de Kyogre en el mar (670), Slaking en el bosque (670) y Groudon en terreno accidentado (670). Cabe mencionar que en el hábitat raro Mewtwo también tiene 680 puntos, empatando en la máxima puntuación.
 
 ---
 
 ### 5.2. Pregunta 2: Hábitat con más puntos de fuerza
 
 > **Pregunta:** *¿Cuál es el hábitat con más puntos de fuerza basándonos en los puntos de estadística?*
+> *(Notebook: `02_habitat_con_mas_fuerza.ipynb`)*
 
-* **Cuaderno**: [`02_habitat_con_mas_fuerza.ipynb`](02_habitat_con_mas_fuerza.ipynb)
-* **Metodología**: Agrupamiento por `habitat` evaluando tanto la media aritmética (`mean()`) como la suma total acumulada (`sum()`) de `base_stat_total`.
+Aquí analizamos dos cosas: qué hábitat tiene la media de fuerza más alta y cuál tiene más puntos sumando todos sus Pokémon.
 
-#### Tabla de Resultados
-
-| Criterio de Evaluación | Hábitat Ganador | Puntos de Fuerza |
+| Criterio | Hábitat ganador | Puntuación |
 | :--- | :---: | :---: |
-| **Por Media de Fuerza** | `rare` | **599.6 de media** |
-| **Por Suma Total Acumulada** | `grassland` | **32.216 puntos totales** |
+| **Por media de fuerza** | `rare` | **599.6 puntos de media** |
+| **Por suma total de puntos** | `grassland` | **32.216 puntos totales** |
 
-#### Visualización
 ![Puntos Totales de Fuerza por Hábitat](graficos/pregunta_2.png)
 
-#### Interpretación
-Se observa una clara divergencia según la métrica analizada:
-1. **Por promedio individual**: El hábitat **`rare`** lidera de forma aplastante con **599.6 puntos de media**, debido a que está compuesto prácticamente en exclusiva por criaturas legendarias (Articuno, Zapdos, Moltres, Mewtwo, Rayquaza).
-2. **Por volumen acumulado total**: El hábitat **`grassland`** (pradera) lidera el total absoluto acumulado con **32.216 puntos** debido a su alta concentración poblacional (80 especies catalogadas).
+* **Comentario:** Si miramos la media, el hábitat más fuerte es claramente **`rare`** con casi 600 puntos de media, lo cual es normal porque casi todos los que viven ahí son legendarios (Mewtwo, las aves legendarias, Rayquaza...). Pero si miramos la suma total acumulada, gana **`grassland`** (pradera) con más de 32.000 puntos porque es el hábitat donde más Pokémon hay metidos (80 especies).
 
 ---
 
-### 5.3. Pregunta 3: Tipo más fuerte de media
+### 5.3. Pregunta 3: Tipo de Pokémon más fuerte de media
 
 > **Pregunta:** *De cada tipo de Pokémon, ¿cuál es el tipo más fuerte de media (basándonos en los puntos de estadística)?*
+> *(Notebook: `03_tipo_mas_fuerte_de_media.ipynb`)*
 
-* **Cuaderno**: [`03_tipo_mas_fuerte_de_media.ipynb`](03_tipo_mas_fuerte_de_media.ipynb)
-* **Metodología**: Agrupamiento de las 1.025 especies por `type_1`, cálculo de media de `base_stat_total` redondeada a 1 decimal y representación de distribución completa mediante diagrama de caja (*Boxplot*).
+Agrupamos los 1.025 Pokémon por su tipo principal (`type_1`), calculamos la media de cada uno y además hicimos un diagrama de caja (*Boxplot*) para ver cómo se reparten las estadísticas dentro de cada tipo.
 
-#### Tabla de Resultados
-
-| Posición / Categoría | Tipo Elemental | Media Base Stat Total |
+| Posición | Tipo | Media Base Stat Total |
 | :---: | :--- | :---: |
-| 🏆 **#1 Más fuerte** | **Dragon (Dragón)** | **490.2** |
-| 🥈 **#2** | Steel (Acero) | 475.1 |
-| 🥉 **#3** | Dark (Siniestro) | 454.7 |
-| **#4** | Psychic (Psíquico) | 446.7 |
-| **#5** | Fire (Fuego) | 446.2 |
+| 🏆 **1º** | **Dragon (Dragón)** | **490.2** |
+| 🥈 **2º** | Steel (Acero) | 475.1 |
+| 🥉 **3º** | Dark (Siniestro) | 454.7 |
+| **4º** | Psychic (Psíquico) | 446.7 |
+| **5º** | Fire (Fuego) | 446.2 |
 | ... | ... | ... |
-| **#17** | Normal | 399.8 |
-| 📉 **#18 Más débil** | **Bug (Bicho)** | **374.6** |
+| **17º** | Normal | 399.8 |
+| 📉 **18º** | **Bug (Bicho)** | **374.6** |
 
-#### Visualización
 ![Distribución de Fuerza Total por Tipo de Pokémon](graficos/pregunta_3.png)
 
-#### Interpretación
-* El tipo **Dragón** lidera holgadamente el juego con una media de **490.2 puntos**, seguido de **Acero (475.1)** y **Siniestro (454.7)**.
-* En el extremo opuesto, el tipo **Bicho** presenta la media más baja de la franquicia (**374.6 puntos**), debido a que concentra multitud de especies de rutas iniciales con evoluciones muy tempranas y stats reducidos.
-* El *Boxplot* evidencia que la caja intercuartílica de Dragón y Acero está claramente desplazada hacia arriba en comparación con el resto, reflejando su diseño deliberado como tipos de élite competitiva.
+* **Comentario:** Como ya nos esperábamos, el tipo más fuerte de media es el **Dragón (490.2)**, seguido de cerca por el tipo **Acero (475.1)**. Son tipos pensados en el juego para ser poderosos y con muchos Pokémon finales y legendarios. En cambio, el tipo **Bicho** es el más débil de media (374.6) porque la mayoría son los primeros bichos que te encuentras al inicio de la aventura y evolucionan rápido pero con estadísticas bajas.
 
 ---
 
 ### 5.4. Pregunta 4: Pokémon no legendario más fuerte
 
 > **Pregunta:** *De los Pokémon no legendarios ni míticos, ¿cuál es el más fuerte?*
+> *(Notebook: `04_no_legendarios_mas_fuertes.ipynb`)*
 
-* **Cuaderno**: [`04_no_legendarios_mas_fuertes.ipynb`](04_no_legendarios_mas_fuertes.ipynb)
-* **Metodología**: Doble filtrado booleano (`is_legendary == False` y `is_mythical == False`), ordenación descendentemente por `base_stat_total` y categorización por escalones de poder.
+Filtramos para quitar legendarios y míticos (`is_legendary == False` y `is_mythical == False`) y ordenamos de mayor a menor fuerza.
 
-#### Tabla de Resultados
-
-| Posición | Pokémon | Tipo Principal | Base Stat Total |
+| Posición | Pokémon | Tipo | Base Stat Total |
 | :---: | :--- | :---: | :---: |
-| 🥇 **1º (Líder Absoluto)** | **Slaking** | Normal | **670** |
+| 🥇 **1º** | **Slaking** | Normal | **670** |
 | 🥈 **2º (Empate a 600)** | Hydreigon | Siniestro | 600 |
 | 🥈 **2º (Empate a 600)** | Kommo-o | Dragón | 600 |
 | 🥈 **2º (Empate a 600)** | Goodra | Dragón | 600 |
 | 🥈 **2º (Empate a 600)** | Baxcalibur | Dragón | 600 |
 
-#### Visualización
 ![Escalones de Fuerza en Pokémon No Legendarios](graficos/pregunta_4.png)
 
-#### Interpretación
-* **Slaking** es el Pokémon no legendario más fuerte de la historia con **670 puntos base**, una cifra superior a la de la mayoría de criaturas legendarias estándar.
-* **La paradoja de diseño**: Para compensar este descomunal poder numérico, Game Freak le otorgó la habilidad pasiva negativa **Ausente (*Truant*)**, que le impide ejecutar movimientos en turnos consecutivos.
-* Inmediatamente por debajo se sitúan los denominados **pseudolegendarios** con exactamente **600 puntos** (Dragonite, Tyranitar, Salamence, Metagross, Garchomp, Hydreigon, Goodra, Kommo-o, Dragapult y Baxcalibur).
+* **Comentario:** El Pokémon no legendario más fuerte de todos es **Slaking con 670 puntos**. Ya sabíamos que esto saldría así: Slaking tiene más estadísticas que muchos legendarios, pero el juego lo compensa dándole su habilidad obligatoria *Ausente* (*Truant*), que hace que pierda un turno de cada dos sin atacar. Justo detrás de él están los 11 "pseudolegendarios" habituales empatados con 600 puntos exactos (Dragonite, Tyranitar, Salamence, Garchomp...).
 
 ---
 
 ### 5.5. Pregunta 5: Legendarios con mayor ratio de captura
 
 > **Pregunta:** *De los legendarios, ¿cuál es el Pokémon con más capture rate (más fácil de capturar)?*
+> *(Notebook: `05_legendarios_capture_rate.ipynb`)*
 
-* **Cuaderno**: [`05_legendarios_capture_rate.ipynb`](05_legendarios_capture_rate.ipynb)
-* **Metodología**: Filtrado del subconjunto de Pokémon legendarios (`is_legendary == True`, 71 registros), análisis de frecuencias de `capture_rate` y ordenación descendente.
+Filtramos los 71 Pokémon legendarios del dataset y ordenamos por su ratio de captura (`capture_rate`).
 
-#### Tabla de Resultados
-
-| Ratio de Captura (`capture_rate`) | Cantidad de Legendarios | Especies Representativas |
+| Capture Rate | Cantidad de Legendarios | Ejemplos |
 | :---: | :---: | :--- |
 | **255 (Máximo posible)** | **3** | **Necrozma, Eternatus, Terapagos** |
 | **45** | 7 | Rayquaza, Xerneas, Yveltal, Cosmog, Cosmoem, Solgaleo, Lunala |
 | **10** | 2 | Zacian, Zamazenta |
 | **6** | 4 | Wo-Chien, Chien-Pao, Ting-Lu, Chi-Yu |
 | **5** | 1 | Ogerpon |
-| **3 (Mínimo / Muy difícil)** | **54** | Articuno, Zapdos, Moltres, Mewtwo, Lugia, Ho-Oh, etc. |
+| **3 (Mínimo / Muy difícil)** | **54** | Mewtwo, Lugia, Ho-Oh, Articuno, Zapdos, etc. |
 
-#### Visualización
 ![Distribución de Capture Rate en Pokémon Legendarios](graficos/pregunta_5.png)
 
-#### Interpretación
-* **Necrozma**, **Eternatus** y **Terapagos** poseen un ratio de **255**, el valor máximo posible del algoritmo de captura (captura casi matemática con cualquier Pokéball estándar).
-* **Justificación narrativa**: Estos tres legendarios forman parte obligatoria del clímax de la historia en sus respectivos títulos (Sol/Luna, Espada/Escudo y Escarlata/Púrpura); facilitar su captura al 100% evita que el jugador quede atascado en el avance cinemático del juego.
-* Por el contrario, el **76% de los legendarios (54 especies)** mantienen el icónico ratio de **3**, exigiendo el uso de Ultra Balls, estados alterados o la Master Ball.
+* **Comentario:** Los más fáciles son **Necrozma, Eternatus y Terapagos** con un ratio de **255** (el máximo del juego). Esto tiene una explicación muy sencilla que cualquier jugador conoce: son Pokémon que el juego te obliga a capturar como parte de la historia para poder avanzar, así que el ratio está puesto para que no se te escapen. En cambio, la gran mayoría (54 legendarios) tienen un ratio de 3, que es lo estándar para que atraparlos cueste bastante.
 
 ---
 
-## 6. Conclusiones Generales
+## 6. Conclusiones
 
-1. **Diseño paramétrico estructurado**: Los datos demuestran que las estadísticas de Pokémon responden a patrones de diseño industrial muy medidos: tipos elementales dominantes (Dragón, Acero) frente a tipos introductorios (Bicho, Normal), así como hábitats fuertemente correlacionados con la jerarquía de poder.
-2. **Relevancia del preprocesamiento y limpieza**: La decisión de descartar megaevoluciones (> 10.000) y de gestionar selectivamente los 639 nulos de `habitat` evitó distorsiones graves que habrían arruinado las medias por tipo y hábitat.
-3. **Equilibrio entre estadística y mecánicas jugables**: El caso de Slaking (670 BST pero limitado por *Truant*) y el de los legendarios con ratio de captura 255 demuestran que los números en un dataset deben interpretarse siempre en conjunto con las reglas del dominio de estudio.
-4. **Validación del flujo de trabajo científico**: El uso combinado de Pandas para el tratamiento matricial, Seaborn/Matplotlib para la comunicación gráfica y Jupyter Notebooks para la reproducibilidad permitió estructurar una investigación rigurosa, reproducible y modular.
+* **Los datos respaldan lo que sabíamos del juego**: Al conocer la franquicia de antemano, los resultados no nos han sorprendido, pero ha sido muy interesante comprobar con datos y gráficos reales cosas como la superioridad de los Dragones, la anomalía de Slaking o los ratios de captura según la historia.
+* **La importancia de limpiar el dataset**: Pasar de 31 a 15 columnas y quitar las formas duplicadas con IDs raros nos facilitó mucho la vida a la hora de trabajar con los notebooks sin liarnos.
+* **Manejo de nulos**: Descubrir por qué faltaban datos en `habitat` nos enseñó que antes de borrar nulos a lo loco hay que entender el motivo por el cual faltan esos datos en el dataset original.
+* **Trabajo en equipo con GitHub**: Como ya habíamos utilizado Git y GitHub Desktop en otras prácticas, repartirnos el trabajo a suertes y sincronizar los notebooks no nos dio ningún problema.
 
 ---
 
-## 7. Estructura del Repositorio
+## 7. Estructura del repositorio
 
 ```text
 notebook-pokemon/
 │
-├── 00_exploracion_inicial.ipynb          # Cuaderno de carga, limpieza, gestión de nulos y EDA general
-├── 01_pokemon_mas_fuerte_por_habitat.ipynb # Pregunta 1: Pokémon más fuerte por hábitat (Rayquaza / Mewtwo)
-├── 02_habitat_con_mas_fuerza.ipynb       # Pregunta 2: Hábitat con más fuerza (media y suma total)
-├── 03_tipo_mas_fuerte_de_media.ipynb     # Pregunta 3: Tipo elemental más fuerte de media (Boxplot)
-├── 04_no_legendarios_mas_fuertes.ipynb   # Pregunta 4: Pokémon no legendario más fuerte (Slaking)
-├── 05_legendarios_capture_rate.ipynb     # Pregunta 5: Legendarios con mayor ratio de captura
+├── 00_exploracion_inicial.ipynb            # Carga, limpieza y estadísticas descriptivas generales
+├── 01_pokemon_mas_fuerte_por_habitat.ipynb # Pregunta 1: Pokémon líder por hábitat
+├── 02_habitat_con_mas_fuerza.ipynb         # Pregunta 2: Comparativa de fuerza de hábitats
+├── 03_tipo_mas_fuerte_de_media.ipynb       # Pregunta 3: Medias y Boxplot por tipo elemental
+├── 04_no_legendarios_mas_fuertes.ipynb     # Pregunta 4: Ranking no legendarios (Slaking)
+├── 05_legendarios_capture_rate.ipynb       # Pregunta 5: Legendarios y facilidad de captura
 │
-├── pokemon.csv                           # Dataset depurado y ordenado por Pokédex (1.025 filas x 15 columnas)
+├── pokemon.csv                             # Dataset final limpio y ordenado (1.025 filas x 15 columnas)
 │
-├── graficos/                             # Gráficos estadísticos exportados en alta resolución
+├── graficos/                               # Gráficos generados para el informe y el README
 │   ├── pregunta_1.png
 │   ├── pregunta_2.png
 │   ├── pregunta_3.png
 │   ├── pregunta_4.png
 │   └── pregunta_5.png
 │
-├── presentacion/                         # Presentación interactiva HTML/CSS/JS (9 diapositivas)
+├── presentacion/                           # Presentación interactiva en HTML/CSS/JS
 │   └── index.html
 │
-├── Memoria_Proyecto_Pokemon.docx         # Informe técnico en formato Microsoft Word (.docx)
-└── README.md                             # Memoria técnica completa visible en la raíz de GitHub
+└── README.md                               # Memoria del proyecto
 ```
