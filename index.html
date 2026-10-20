@@ -234,6 +234,16 @@
             font-size: 0.8rem; font-weight: 700; color: #fff;
         }
 
+        .hab-bar.h-rare { background: linear-gradient(90deg, #8e44ad, #c39bd3); }
+        .hab-bar.h-sea { background: linear-gradient(90deg, #1e88e5, #64b5f6); }
+        .hab-bar.h-rough-terrain { background: linear-gradient(90deg, #a1662f, #d2a679); }
+        .hab-bar.h-cave { background: linear-gradient(90deg, #5d6d7e, #aab7b8); }
+        .hab-bar.h-urban { background: linear-gradient(90deg, #f39c12, #f8c471); }
+        .hab-bar.h-mountain { background: linear-gradient(90deg, #795548, #bcaaa4); }
+        .hab-bar.h-grassland { background: linear-gradient(90deg, #43a047, #a5d6a7); }
+        .hab-bar.h-waters-edge { background: linear-gradient(90deg, #00acc1, #80deea); }
+        .hab-bar.h-forest { background: linear-gradient(90deg, #1b5e20, #388e3c); }
+
         /* ── CONCLUSION LIST ── */
         .conc-list { list-style: none; max-width: 820px; width: 100%; }
         .conc-list li {
@@ -354,15 +364,15 @@
     <div class="slide-title">Hábitat con más Fuerza</div>
     <div class="slide-subtitle">¿Qué hábitat tiene la <strong>media</strong> de puntos de estadística total más alta?</div>
     <div class="hab-list">
-        <div class="hab-row"><span class="hab-name">rare</span>        <div class="hab-bar" style="width:410px;">599.6</div></div>
-        <div class="hab-row"><span class="hab-name">sea</span>         <div class="hab-bar" style="width:290px;">425.3</div></div>
-        <div class="hab-row"><span class="hab-name">rough-terrain</span><div class="hab-bar" style="width:284px;">417.4</div></div>
-        <div class="hab-row"><span class="hab-name">cave</span>        <div class="hab-bar" style="width:279px;">410.9</div></div>
-        <div class="hab-row"><span class="hab-name">urban</span>       <div class="hab-bar" style="width:276px;">407.9</div></div>
-        <div class="hab-row"><span class="hab-name">mountain</span>    <div class="hab-bar" style="width:275px;">407.3</div></div>
-        <div class="hab-row"><span class="hab-name">grassland</span>   <div class="hab-bar" style="width:272px;">402.7</div></div>
-        <div class="hab-row"><span class="hab-name">waters-edge</span> <div class="hab-bar" style="width:271px;">399.4</div></div>
-        <div class="hab-row"><span class="hab-name">forest</span>      <div class="hab-bar" style="width:248px;">368.7</div></div>
+        <div class="hab-row"><span class="hab-name">rare</span>        <div class="hab-bar h-rare" style="width:410px;">599.6</div></div>
+        <div class="hab-row"><span class="hab-name">sea</span>         <div class="hab-bar h-sea" style="width:290px;">425.3</div></div>
+        <div class="hab-row"><span class="hab-name">rough-terrain</span><div class="hab-bar h-rough-terrain" style="width:284px;">417.4</div></div>
+        <div class="hab-row"><span class="hab-name">cave</span>        <div class="hab-bar h-cave" style="width:279px;">410.9</div></div>
+        <div class="hab-row"><span class="hab-name">urban</span>       <div class="hab-bar h-urban" style="width:276px;">407.9</div></div>
+        <div class="hab-row"><span class="hab-name">mountain</span>    <div class="hab-bar h-mountain" style="width:275px;">407.3</div></div>
+        <div class="hab-row"><span class="hab-name">grassland</span>   <div class="hab-bar h-grassland" style="width:272px;">402.7</div></div>
+        <div class="hab-row"><span class="hab-name">waters-edge</span> <div class="hab-bar h-waters-edge" style="width:271px;">399.4</div></div>
+        <div class="hab-row"><span class="hab-name">forest</span>      <div class="hab-bar h-forest" style="width:248px;">368.7</div></div>
     </div>
     <p style="margin-top:14px;font-size:0.78rem;color:rgba(255,255,255,0.4);">* Hábitats ordenados por media de base_stat_total (descendente)</p>
 </div>
